@@ -40,6 +40,12 @@
     <properties>
         <componentName>exportfile</componentName>
         <jiraProjectName>EXPORTFILE</jiraProjectName>
-        <jiraComponentId></jiraComponentId>
+        <jiraComponentId>13654</jiraComponentId>
     </properties>
+     <scm>
+        <connection>scm:git:https://github.com/lutece-platform/lutece-directory-module-directory-exportfile.git</connection>
+        <developerConnection>scm:git:https://github.com/lutece-platform/lutece-directory-module-directory-exportfile.git</developerConnection>
+        <url>https://github.com/lutece-platform/lutece-directory-module-directory-exportfile.git</url>
+      <tag>HEAD</tag>
+  </scm>
 </project>
