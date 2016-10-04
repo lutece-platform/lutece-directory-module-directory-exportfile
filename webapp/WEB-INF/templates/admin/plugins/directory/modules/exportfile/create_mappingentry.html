@@ -1,0 +1,34 @@
+<#include "manageexportfile_tabs.html" />
+<@tabs tab="mappingentry" />
+
+<@rowBoxHeader i18nTitleKey="module.directory.exportfile.create_mappingentry.pageTitle">
+    <form class="form-horizontal" method="post" name="create_mappingentry" action="jsp/admin/plugins/directory/modules/exportfile/ManageMappingEntry.jsp">
+        <@messages errors=errors />
+        <input type="hidden" id="id" name="id"/>
+
+<div class="form-group">
+	<label class="control-label col-xs-12 col-sm-12 col-md-3 col-lg-3" for="idDirectory">#i18n{module.directory.exportfile.create_mappingentry.labelIdDirectory} </label>
+	<div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
+
+		<@comboWithParams name="idDirectory" default_value=mappingentry.idDirectory?string additionalParameters="class=\"input-xxlarge\"" items=list_directory />
+	<button type="submit"  name="view_createMappingEntry" class="btn btn-primary btn-sm btn-flat">
+			<i class="glyphicon glyphicon-ok-circle"></i>&nbsp;apply
+	</button>
+	<p class="help-block">#i18n{module.directory.exportfile.create_mappingentry.labelIdDirectory.help}</p>
+	</div>
+</div>
+
+<div class="form-group">
+	<label class="control-label col-xs-12 col-sm-12 col-md-3 col-lg-3" for="idDirectory">#i18n{module.directory.exportfile.create_mappingentry.labelIdEntry} </label>
+	<div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
+		<@comboWithParams name="idEntry" default_value=mappingentry.idEntry?string additionalParameters="class=\"input-xxlarge\"" items=list_entries />
+		<p class="help-block">#i18n{module.directory.exportfile.create_mappingentry.labelIdEntry.help}</p>
+	</div>
+	
+</div>
+
+
+        <@fieldInputCheckBox i18nLabelKey="module.directory.exportfile.create_mappingentry.labelIsActive" inputName="isActive" value='true' checked=mappingentry.isActive!false i18nHelpBlockKey="module.directory.exportfile.create_mappingentry.labelIsActive.help" />
+        <@actionButtons button1Name="action_createMappingEntry" button2Name="view_manageMappingEntrys"/>
+    </form>
+</@rowBoxHeader>

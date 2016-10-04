@@ -1,0 +1,49 @@
+<#include "manageexportfile_tabs.html" />
+<@tabs tab="file" />
+
+<@rowBox>
+    <@boxHeader i18nTitleKey="module.directory.exportfile.manage_files.tableLabel">
+        <@headerButtons>
+        
+    </@headerButtons>
+    </@boxHeader>
+    <@boxBody>    
+    <@messages infos=infos />
+    <@paginationAdmin paginator=paginator combo=1 />
+    
+    <@table>
+        <tr>
+            <input type="hidden" id="id" name="id"/>
+            <th>#i18n{module.directory.exportfile.manage_files.columnIdDirectory}</th>
+            <th>#i18n{module.directory.exportfile.manage_files.columnIdFile}</th>
+            <th>#i18n{module.directory.exportfile.manage_files.columnIsCreated}</th>
+            <th>#i18n{portal.util.labelActions}</th>
+        </tr>
+        <@tableHeadBodySeparator />
+            <#list file_list as file >
+        <tr>
+            <input type="hidden" id="id" name="id"/>
+            <td>
+                ${file.idDirectory}
+            </td>
+            <td>
+                ${file.idFile}
+            </td>
+            <td>
+                ${file.isCreated?string('true', 'false')}
+            </td>
+        <td>
+
+            <a href="jsp/admin/plugins/directory/modules/exportfile/ManageFiles.jsp?action=confirmRemoveFile&id=${file.id}"
+               class="btn btn-danger btn-small" title="#i18n{portal.util.labelDelete}" >
+                <i class="fa fa-trash"></i>
+            </a>
+        </td>
+        </tr>
+        </#list>
+    </@table>
+
+    <@paginationAdmin paginator=paginator />
+
+  </@boxBody>
+</@rowBox>

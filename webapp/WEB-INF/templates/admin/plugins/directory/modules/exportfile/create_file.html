@@ -1,0 +1,16 @@
+<#include "manageexportfile_tabs.html" />
+<@tabs tab="file" />
+
+<@rowBoxHeader i18nTitleKey="#i18n{module.directory.exportfile.create_file.pageTitle">
+    <form class="form-horizontal" method="post" name="create_file" action="jsp/admin/plugins/directory/modules/exportfile/ManageFiles.jsp">
+        <@messages errors=errors />
+        <input type="hidden" id="id" name="id"/>
+        
+        <@fieldInputText i18nLabelKey="module.directory.exportfile.create_file.labelIdDirectory" inputName="idDirectory" mandatory=true value="${file.idDirectory!''}" i18nHelpBlockKey="module.directory.exportfile.create_file.labelIdDirectory.help" />
+        <@fieldInputText i18nLabelKey="module.directory.exportfile.create_file.labelIdFile" inputName="idFile" mandatory=true value="${file.idFile!''}" i18nHelpBlockKey="module.directory.exportfile.create_file.labelIdFile.help" />
+
+
+        <@fieldInputCheckBox i18nLabelKey="module.directory.exportfile.create_file.labelIsCreated" inputName="isCreated"  value="true" checked=file.isCreated!false i18nHelpBlockKey="module.directory.exportfile.create_file.labelIsCreated.help" />
+        <@actionButtons button1Name="action_createFile" button2Name="view_manageFiles"/>
+    </form>
+</@rowBoxHeader>

@@ -1,0 +1,17 @@
+<#macro tabs tab >
+<div>
+    <ul class="nav nav-tabs">
+	<li <#if tab="mappingentry">class="active"</#if>>
+            <a href="jsp/admin/plugins/directory/modules/exportfile/ManageMappingEntry.jsp">
+                #i18n{module.directory.exportfile.manage_mappingentrys.pageTitle}
+            </a>
+        </li>
+        <li <#if tab="file">class="active"</#if>>
+            <a href="jsp/admin/plugins/directory/modules/exportfile/ManageFiles.jsp">
+                #i18n{module.directory.exportfile.manage_files.pageTitle}
+            </a>
+        </li>
+     
+    </ul>
+</div>
+</#macro>
