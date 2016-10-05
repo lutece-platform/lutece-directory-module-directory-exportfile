@@ -33,9 +33,6 @@
  */
 package fr.paris.lutece.plugins.directory.modules.exportfile.business;
 
-import javax.validation.constraints.*;
-import org.hibernate.validator.constraints.*;
-
 /**
  * This is the business class for the object MappingEntry
  */
@@ -47,6 +44,8 @@ public class MappingEntry
     private int _nIdEntry;
 
     private int _nIdDirectory;
+
+    private String _strPath;
 
     private boolean _bIsActive;
 
@@ -111,6 +110,27 @@ public class MappingEntry
     public void setIdDirectory( int nIdDirectory )
     {
         _nIdDirectory = nIdDirectory;
+    }
+
+    /**
+     * Returns the Path
+     * 
+     * @return The Path
+     */
+    public String getPath( )
+    {
+        return _strPath;
+    }
+
+    /**
+     * Sets the Path
+     * 
+     * @param strPath
+     *            The Path
+     */
+    public void setPath( String strPath )
+    {
+        _strPath = strPath;
     }
 
     /**

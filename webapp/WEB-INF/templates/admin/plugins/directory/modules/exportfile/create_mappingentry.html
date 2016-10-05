@@ -27,7 +27,8 @@
 	
 </div>
 
-
+		<@fieldInputText i18nLabelKey="module.directory.exportfile.create_mappingentry.labelPath" inputName="path" mandatory=true value="${mappingentry.path!''}" i18nHelpBlockKey="module.directory.exportfile.create_mappingentry.labelPath.help" />
+		
         <@fieldInputCheckBox i18nLabelKey="module.directory.exportfile.create_mappingentry.labelIsActive" inputName="isActive" value='true' checked=mappingentry.isActive!false i18nHelpBlockKey="module.directory.exportfile.create_mappingentry.labelIsActive.help" />
         <@actionButtons button1Name="action_createMappingEntry" button2Name="view_manageMappingEntrys"/>
     </form>

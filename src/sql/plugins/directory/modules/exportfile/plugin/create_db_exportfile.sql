@@ -21,6 +21,7 @@ CREATE TABLE exportfile_mapping_entry (
 id_mappingentry int(6) NOT NULL,
 identry int(11) NOT NULL default '0',
 iddirectory int(11) NOT NULL default '0',
+path varchar(255) NOT NULL,
 isactive SMALLINT NOT NULL,
 PRIMARY KEY (id_mappingentry)
 );

@@ -45,7 +45,6 @@ import fr.paris.lutece.portal.service.daemon.Daemon;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.util.AppLogService;
-import fr.paris.lutece.portal.service.util.AppPropertiesService;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
@@ -60,7 +59,6 @@ import org.apache.commons.compress.utils.IOUtils;
  */
 public class ExportFileDaemon extends Daemon
 {
-    public static final String PATH_DIRECTORY_IMAGE = AppPropertiesService.getProperty( "module.directory.exportfile.path_directory_save_image", "image" );
     private DirectoryService _directorySrvc = DirectoryService.getService( );
     public final Plugin _pluginDirectory = PluginService.getPlugin( DirectoryPlugin.PLUGIN_NAME );
 
@@ -83,7 +81,7 @@ public class ExportFileDaemon extends Daemon
                     try
                     {
 
-                        doProcessAction( ent.getIdEntry( ), record.getIdRecord( ), ent.getIdDirectory( ) );
+                        doProcessAction( ent.getIdEntry( ), record.getIdRecord( ), ent.getIdDirectory( ), ent.getPath( ) );
 
                     }
                     catch( Exception e )
@@ -105,15 +103,15 @@ public class ExportFileDaemon extends Daemon
      * @param idRecord
      * @param idDirectory
      */
-    private void doProcessAction( int nIdEntry, int idRecord, int idDirectory )
+    private void doProcessAction( int nIdEntry, int nIdRecord, int nIdDirectory, String strPath )
     {
         File fileSaved = null;
         PhysicalFile phFile = null;
 
-        fr.paris.lutece.plugins.directory.business.File file = _directorySrvc.getRecordFieldValue( nIdEntry, idRecord, idDirectory );
+        fr.paris.lutece.plugins.directory.business.File file = _directorySrvc.getRecordFieldValue( nIdEntry, nIdRecord, nIdDirectory );
         if ( file != null )
         {
-            fileSaved = FileHome.findFile( file.getIdFile( ), idDirectory );
+            fileSaved = FileHome.findFile( file.getIdFile( ), nIdDirectory );
             phFile = PhysicalFileHome.findByPrimaryKey( file.getPhysicalFile( ).getIdPhysicalFile( ), _pluginDirectory );
         }
         if ( file != null && phFile != null && ( fileSaved == null || !fileSaved.getIsCreated( ) ) )
@@ -126,7 +124,7 @@ public class ExportFileDaemon extends Daemon
             try
             {
 
-                out = new FileOutputStream( new java.io.File( "/home/rafik/image/" + fileName ) );
+                out = new FileOutputStream( new java.io.File( strPath + "/" + fileName ) );
                 IOUtils.copy( in, out );
                 IOUtils.closeQuietly( in );
                 IOUtils.closeQuietly( out );
@@ -135,7 +133,7 @@ public class ExportFileDaemon extends Daemon
             catch( FileNotFoundException e )
             {
                 File fileExport = new File( );
-                fileExport.setIdDirectory( idDirectory );
+                fileExport.setIdDirectory( nIdDirectory );
                 fileExport.setIsCreated( false );
                 fileExport.setIdFile( file.getIdFile( ) );
                 AppLogService.error( "Error de creation du fichier", e );
@@ -143,14 +141,14 @@ public class ExportFileDaemon extends Daemon
             catch( IOException e )
             {
                 File fileExport = new File( );
-                fileExport.setIdDirectory( idDirectory );
+                fileExport.setIdDirectory( nIdDirectory );
                 fileExport.setIsCreated( false );
                 fileExport.setIdFile( file.getIdFile( ) );
                 AppLogService.error( "Error de creation du fichier", e );
             }
 
             File fileExport = new File( );
-            fileExport.setIdDirectory( idDirectory );
+            fileExport.setIdDirectory( nIdDirectory );
             fileExport.setIsCreated( true );
             fileExport.setIdFile( file.getIdFile( ) );
 

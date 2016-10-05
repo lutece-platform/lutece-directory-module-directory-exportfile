@@ -22,6 +22,7 @@
             <input type="hidden" id="id" name="id"/>
             <th>#i18n{module.directory.exportfile.manage_mappingentrys.columnIdEntry}</th>
             <th>#i18n{module.directory.exportfile.manage_mappingentrys.columnIdDirectory}</th>
+            <th>#i18n{module.directory.exportfile.manage_mappingentrys.columnPath}</th>
             <th>#i18n{module.directory.exportfile.manage_mappingentrys.columnIsActive}</th>
             <th>#i18n{portal.util.labelActions}</th>
         </tr>
@@ -34,6 +35,9 @@
             </td>
             <td>
                 ${mappingentry.idDirectory}
+            </td>
+             <td>
+                ${mappingentry.path}
             </td>
             <td>
                 ${mappingentry.isActive?string('true', 'false')}
