@@ -124,7 +124,7 @@ public class ExportFileDaemon extends Daemon
             try
             {
 
-                out = new FileOutputStream( new java.io.File( strPath + "/" + fileName ) );
+                out = new FileOutputStream( new java.io.File( strPath + "/" + fileName.trim( ) ) );
                 IOUtils.copy( in, out );
                 IOUtils.closeQuietly( in );
                 IOUtils.closeQuietly( out );
