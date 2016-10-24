@@ -71,7 +71,6 @@ public final class FileNameHome
         return fileName;
     }
 
-
     /**
      * Remove the fileName whose idMappingEntry is specified in parameter
      * 
@@ -82,7 +81,6 @@ public final class FileNameHome
     {
         _dao.delete( fileName, _plugin );
     }
-    
 
     /**
      * Remove the fileName whose idMappingEntry is specified in parameter
@@ -90,26 +88,24 @@ public final class FileNameHome
      * @param nKey
      *            The file idMappingEntry
      */
-    public static void remove( int nKey)
+    public static void remove( int nKey )
     {
-        _dao.delete( nKey,  _plugin );
+        _dao.delete( nKey, _plugin );
     }
 
     // /////////////////////////////////////////////////////////////////////////
     // Finders
 
-
-
     /**
      * Load the data of all the FileName objects and returns them in form of a collection
+     * 
      * @param nIdDirectory
      * 
      * @return the collection which contains the data of all the file objects
      */
-    public static Collection<FileName> getFilesList( int nIdMappingEntry)
+    public static Collection<FileName> getFilesList( int nIdMappingEntry )
     {
         return _dao.selectFilesNameList( nIdMappingEntry, _plugin );
     }
 
-    
 }

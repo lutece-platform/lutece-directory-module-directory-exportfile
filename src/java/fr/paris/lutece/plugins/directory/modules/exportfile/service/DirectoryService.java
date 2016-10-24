@@ -75,7 +75,6 @@ public class DirectoryService
     private static final String DATE_CREATION_RECORD_TITLE = "creation date";
     public static final String DATE_CREATION_RECORD_CODE = "9999999";
 
-
     private static DirectoryService _singleton;
 
     /**
@@ -168,7 +167,7 @@ public class DirectoryService
                     referenceList.add( referenceItem );
                 }
             }
-            
+
             ReferenceItem referenceItem = new ReferenceItem( );
             referenceItem.setCode( DATE_CREATION_RECORD_CODE );
             referenceItem.setName( DATE_CREATION_RECORD_TITLE );
@@ -259,20 +258,20 @@ public class DirectoryService
 
         return listRecord;
     }
-    
+
     public Timestamp getDateCreation( int nIdRecord, int nIdDirectory )
     {
         Plugin pluginDirectory = PluginService.getPlugin( DirectoryPlugin.PLUGIN_NAME );
-        
-        RecordFieldFilter recordFieldFilter = new RecordFieldFilter(  );
+
+        RecordFieldFilter recordFieldFilter = new RecordFieldFilter( );
         recordFieldFilter.setIdDirectory( nIdDirectory );
         recordFieldFilter.setIdRecord( nIdRecord );
 
         List<RecordField> listRecordFields = RecordFieldHome.getRecordFieldList( recordFieldFilter, pluginDirectory );
 
-        if ( ( listRecordFields != null ) && !listRecordFields.isEmpty(  ) && ( listRecordFields.get( 0 ) != null ) )
+        if ( ( listRecordFields != null ) && !listRecordFields.isEmpty( ) && ( listRecordFields.get( 0 ) != null ) )
         {
-            return listRecordFields.get( 0 ).getRecord(  ).getDateCreation(  );
+            return listRecordFields.get( 0 ).getRecord( ).getDateCreation( );
         }
 
         return null;
@@ -280,6 +279,7 @@ public class DirectoryService
 
     /**
      * get record field value
+     * 
      * @param nIdEntry
      * @param nIdRecord
      * @param nIdDirectory
@@ -290,24 +290,23 @@ public class DirectoryService
         String strRecordFieldValue = StringUtils.EMPTY;
         Plugin pluginDirectory = PluginService.getPlugin( DirectoryPlugin.PLUGIN_NAME );
 
-       IEntry entry = EntryHome.findByPrimaryKey(nIdEntry, pluginDirectory );
+        IEntry entry = EntryHome.findByPrimaryKey( nIdEntry, pluginDirectory );
 
         if ( ( entry != null ) )
         {
-          
-            RecordFieldFilter recordFieldFilter = new RecordFieldFilter(  );
+
+            RecordFieldFilter recordFieldFilter = new RecordFieldFilter( );
             recordFieldFilter.setIdDirectory( nIdDirectory );
-            recordFieldFilter.setIdEntry( entry.getIdEntry(  ) );
+            recordFieldFilter.setIdEntry( entry.getIdEntry( ) );
             recordFieldFilter.setIdRecord( nIdRecord );
 
             List<RecordField> listRecordFields = RecordFieldHome.getRecordFieldList( recordFieldFilter, pluginDirectory );
 
-            if ( entry.getEntryType(  ).getIdType(  ) == AppPropertiesService.getPropertyInt( 
-                        PROPERTY_ENTRY_TYPE_GEOLOCATION, 16 ) )
+            if ( entry.getEntryType( ).getIdType( ) == AppPropertiesService.getPropertyInt( PROPERTY_ENTRY_TYPE_GEOLOCATION, 16 ) )
             {
-                if ( listRecordFields.size(  ) >= 4 )
+                if ( listRecordFields.size( ) >= 4 )
                 {
-                    return listRecordFields.get( 2 ).getValue(  ) + ", " + listRecordFields.get( 3 ).getValue(  );
+                    return listRecordFields.get( 2 ).getValue( ) + ", " + listRecordFields.get( 3 ).getValue( );
                 }
                 else
                 {
@@ -315,12 +314,12 @@ public class DirectoryService
                 }
             }
 
-            if ( ( entry.getEntryType(  ).getIdType(  ) == AppPropertiesService.getPropertyInt( 
-                        PROPERTY_ENTRY_TYPE_IMAGE, 10 ) ) || ( entry.getEntryType(  ).getIdType(  ) == 8 ) )
+            if ( ( entry.getEntryType( ).getIdType( ) == AppPropertiesService.getPropertyInt( PROPERTY_ENTRY_TYPE_IMAGE, 10 ) )
+                    || ( entry.getEntryType( ).getIdType( ) == 8 ) )
             {
-                if ( listRecordFields.size(  ) >= 1 )
+                if ( listRecordFields.size( ) >= 1 )
                 {
-                    return listRecordFields.get( 0 ).getFile(  ).getTitle( );
+                    return listRecordFields.get( 0 ).getFile( ).getTitle( );
                 }
                 else
                 {
@@ -328,20 +327,19 @@ public class DirectoryService
                 }
             }
 
-            if ( ( listRecordFields != null ) && !listRecordFields.isEmpty(  ) && ( listRecordFields.get( 0 ) != null ) )
+            if ( ( listRecordFields != null ) && !listRecordFields.isEmpty( ) && ( listRecordFields.get( 0 ) != null ) )
             {
                 RecordField recordFieldIdDemand = listRecordFields.get( 0 );
-                strRecordFieldValue = recordFieldIdDemand.getValue(  );
+                strRecordFieldValue = recordFieldIdDemand.getValue( );
 
-                if ( recordFieldIdDemand.getField(  ) != null )
+                if ( recordFieldIdDemand.getField( ) != null )
                 {
-                    strRecordFieldValue = recordFieldIdDemand.getField(  ).getTitle(  );
+                    strRecordFieldValue = recordFieldIdDemand.getField( ).getTitle( );
                 }
             }
         }
 
         return strRecordFieldValue;
     }
-
 
 }

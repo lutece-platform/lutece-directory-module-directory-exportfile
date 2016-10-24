@@ -52,46 +52,49 @@ public final class FileNameDAO implements IFileNameDAO
     private static final String SQL_QUERY_DELETE = "DELETE FROM exportfile_fileName WHERE mapping_entry=?  AND attribute = ?";
     private static final String SQL_QUERY_DELETE_BY_IDMAPPING = "DELETE FROM exportfile_fileName WHERE mapping_entry=? ";
 
-
-  
     /**
      * {@inheritDoc }
      */
-	@Override
-	public void insert(FileName fileName, Plugin plugin) {
-		 
-		DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, plugin );
+    @Override
+    public void insert( FileName fileName, Plugin plugin )
+    {
 
-	      
-	    daoUtil.setInt( 1, fileName.getMappingEntry( ) );
-	    daoUtil.setString( 2, fileName.getAttribute( ) );
-	    daoUtil.setInt( 3, fileName.getNumberChar( ) );
-	    daoUtil.setInt( 4, fileName.getOrder( ) );
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, plugin );
 
-	    daoUtil.executeUpdate( );
-	    daoUtil.free( );
-		
-	}
-	 /**
+        daoUtil.setInt( 1, fileName.getMappingEntry( ) );
+        daoUtil.setString( 2, fileName.getAttribute( ) );
+        daoUtil.setInt( 3, fileName.getNumberChar( ) );
+        daoUtil.setInt( 4, fileName.getOrder( ) );
+
+        daoUtil.executeUpdate( );
+        daoUtil.free( );
+
+    }
+
+    /**
      * {@inheritDoc }
      */
-	@Override
-	public void store(FileName fileName, Plugin plugin) {
-		// TODO Auto-generated method stub
-		
-	}
-	 /**
+    @Override
+    public void store( FileName fileName, Plugin plugin )
+    {
+        // TODO Auto-generated method stub
+
+    }
+
+    /**
      * {@inheritDoc }
      */
-	@Override
-	public void delete(FileName fileName, Plugin plugin) {
+    @Override
+    public void delete( FileName fileName, Plugin plugin )
+    {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, plugin );
         daoUtil.setInt( 1, fileName.getMappingEntry( ) );
-        daoUtil.setString( 1, fileName.getAttribute( ));
+        daoUtil.setString( 1, fileName.getAttribute( ) );
         daoUtil.executeUpdate( );
-        daoUtil.free( );		
-	}
-	 /**
+        daoUtil.free( );
+    }
+
+    /**
      * {@inheritDoc }
      */
     @Override
@@ -103,27 +106,27 @@ public final class FileNameDAO implements IFileNameDAO
         daoUtil.free( );
     }
 
-	@Override
-	public Collection<FileName> selectFilesNameList(int nMappingEntry,Plugin plugin) {
-		 Collection<FileName> fileNameList = new ArrayList<FileName>( );
-	        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT, plugin );
-	        daoUtil.setInt(1, nMappingEntry);
-	        daoUtil.executeQuery( );
+    @Override
+    public Collection<FileName> selectFilesNameList( int nMappingEntry, Plugin plugin )
+    {
+        Collection<FileName> fileNameList = new ArrayList<FileName>( );
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT, plugin );
+        daoUtil.setInt( 1, nMappingEntry );
+        daoUtil.executeQuery( );
 
-	        while ( daoUtil.next( ) )
-	        {
-	            FileName fileName = new FileName( );
+        while ( daoUtil.next( ) )
+        {
+            FileName fileName = new FileName( );
 
-	            fileName.setMappingEntry( daoUtil.getInt( 1 ) );
-	            fileName.setAttribute( daoUtil.getString( 2 ) );
-	            fileName.setNumberChar( daoUtil.getInt( 3 ) );
-	            fileName.setOrder( daoUtil.getInt( 4 ) );
+            fileName.setMappingEntry( daoUtil.getInt( 1 ) );
+            fileName.setAttribute( daoUtil.getString( 2 ) );
+            fileName.setNumberChar( daoUtil.getInt( 3 ) );
+            fileName.setOrder( daoUtil.getInt( 4 ) );
 
-	            
-	            fileNameList.add( fileName );
-	        }
+            fileNameList.add( fileName );
+        }
 
-	        daoUtil.free( );
-	        return fileNameList;
-	}
+        daoUtil.free( );
+        return fileNameList;
+    }
 }

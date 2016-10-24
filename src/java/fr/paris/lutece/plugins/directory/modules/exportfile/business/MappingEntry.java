@@ -45,7 +45,7 @@ public class MappingEntry
 {
     // Variables declarations
     private int _nId;
- 
+
     @Min( value = 1, message = "#i18n{module.directory.exportfile.validation.mappingEntry.idEntry.notEmpty}" )
     private int _nIdEntry;
 

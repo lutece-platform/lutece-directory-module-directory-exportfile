@@ -68,7 +68,6 @@ public class ExportFileDaemon extends Daemon
     public final Plugin _pluginDirectory = PluginService.getPlugin( DirectoryPlugin.PLUGIN_NAME );
     private String PROPERTY_IMAGE_TITLE_DATE_FORMAT = AppPropertiesService.getProperty( "module.directory.exportfile.date.format", "YYYY-MM-DD hh:mm:ss" );
 
-
     /**
      * {@inheritDoc}
      */
@@ -127,13 +126,17 @@ public class ExportFileDaemon extends Daemon
             byte [ ] bytes = phFile.getValue( );
             ByteArrayInputStream in = new ByteArrayInputStream( bytes );
             FileOutputStream out;
-            String fileName = getFileName(  nIdEntry, nIdRecord, nIdDirectory,  nId );
-            if (fileName == null ){
-            	fileName= file.getTitle( );
-            } else if(file.getExtension( ) != null ){
-                fileName= fileName.concat("."+file.getExtension( ));
+            String fileName = getFileName( nIdEntry, nIdRecord, nIdDirectory, nId );
+            if ( fileName == null )
+            {
+                fileName = file.getTitle( );
             }
-            
+            else
+                if ( file.getExtension( ) != null )
+                {
+                    fileName = fileName.concat( "." + file.getExtension( ) );
+                }
+
             try
             {
 
@@ -168,38 +171,44 @@ public class ExportFileDaemon extends Daemon
             FileHome.create( fileExport );
         }
     }
-    
-    private String getFileName( int nIdEntry, int nIdRecord, int nIdDirectory,  int nId )
+
+    private String getFileName( int nIdEntry, int nIdRecord, int nIdDirectory, int nId )
     {
-    	
-    	Collection<FileName> fileNameList= FileNameHome.getFilesList(nId);
-    	String fileName= StringUtils.EMPTY;
+
+        Collection<FileName> fileNameList = FileNameHome.getFilesList( nId );
+        String fileName = StringUtils.EMPTY;
         SimpleDateFormat dt = new SimpleDateFormat( PROPERTY_IMAGE_TITLE_DATE_FORMAT );
 
-    	for(FileName fname:fileNameList){
-    		
-        	String tmpFileName= _directorySrvc.getRecordFieldStringValue( Integer.parseInt(fname.getAttribute( )), nIdRecord, nIdDirectory );
-	    	if(fname.getAttribute().equals(DirectoryService.DATE_CREATION_RECORD_CODE)){
-	    		
-	    		fileName= fileName.concat(dt.format(_directorySrvc.getDateCreation(nIdRecord, nIdDirectory))).concat("_");
-	    		
-	    	}else if(tmpFileName.length( ) > fname.getNumberChar( ) ){
-	    		
-	    		
-	    		fileName= fileName.concat(tmpFileName.substring(0,fname.getNumberChar( )).concat("_"));
+        for ( FileName fname : fileNameList )
+        {
 
-	    	}
-	    	else{
-	    		
-	    		fileName= fileName.concat(tmpFileName).concat("_");
-	
-	    	}
-    	
-    	}
-    	if(!fileName.isEmpty( )){
-        	return fileName.substring(0,fileName.length() - 1);
+            String tmpFileName = _directorySrvc.getRecordFieldStringValue( Integer.parseInt( fname.getAttribute( ) ), nIdRecord, nIdDirectory );
+            if ( fname.getAttribute( ).equals( DirectoryService.DATE_CREATION_RECORD_CODE ) )
+            {
 
-    	}
-    	return null;
+                fileName = fileName.concat( dt.format( _directorySrvc.getDateCreation( nIdRecord, nIdDirectory ) ) ).concat( "_" );
+
+            }
+            else
+                if ( tmpFileName.length( ) > fname.getNumberChar( ) )
+                {
+
+                    fileName = fileName.concat( tmpFileName.substring( 0, fname.getNumberChar( ) ).concat( "_" ) );
+
+                }
+                else
+                {
+
+                    fileName = fileName.concat( tmpFileName ).concat( "_" );
+
+                }
+
+        }
+        if ( !fileName.isEmpty( ) )
+        {
+            return fileName.substring( 0, fileName.length( ) - 1 );
+
+        }
+        return null;
     }
 }

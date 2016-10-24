@@ -71,7 +71,7 @@ public interface IFileNameDAO
      * @param plugin
      *            the Plugin
      */
-    void delete(  FileName fileName, Plugin plugin );
+    void delete( FileName fileName, Plugin plugin );
 
     /**
      * Delete a record from the table
@@ -81,11 +81,10 @@ public interface IFileNameDAO
      * @param plugin
      *            the Plugin
      */
-    void delete(  int nIdMapping, Plugin plugin );
+    void delete( int nIdMapping, Plugin plugin );
 
     // /////////////////////////////////////////////////////////////////////////
     // Finders
-
 
     /**
      * Load the data of all the fileName objects and returns them as a collection
@@ -95,6 +94,5 @@ public interface IFileNameDAO
      * @return The collection which contains the data of all the fileName objects
      */
     Collection<FileName> selectFilesNameList( int nMappingEntry, Plugin plugin );
-
 
 }

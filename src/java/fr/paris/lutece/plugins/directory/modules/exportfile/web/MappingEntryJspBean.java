@@ -77,9 +77,8 @@ public class MappingEntryJspBean extends ManageExportfileJspBean
     private static final String PARAMETER_ID_MAPPINGENTRY = "id";
     private static final String PARAMETER_ID_DIRECTORY = "idDirectory";
     private static final String PARAMETER_SAVE_FILENAME = "action_createMappingEntry";
-    
-    private static final String PARAMETER_SAVE_FILENAME_VALUE = "save_fileName";
 
+    private static final String PARAMETER_SAVE_FILENAME_VALUE = "save_fileName";
 
     // Properties for page titles
     private static final String PROPERTY_PAGE_TITLE_MANAGE_MAPPINGENTRYS = "module.directory.exportfile.manage_mappingentrys.pageTitle";
@@ -91,7 +90,6 @@ public class MappingEntryJspBean extends ManageExportfileJspBean
     private static final String MARK_MAPPINGENTRY = "mappingentry";
     private static final String MARK_FILENAME_LIST = "fileName_list";
 
-
     private static final String JSP_MANAGE_MAPPINGENTRYS = "jsp/admin/plugins/directory/modules/exportfile/ManageMappingEntry.jsp";
 
     // Properties
@@ -100,7 +98,6 @@ public class MappingEntryJspBean extends ManageExportfileJspBean
 
     private static final String VALIDATION_ATTRIBUTES_PREFIX = "module.directory.exportfile.model.entity.mappingentry.attribute.";
     private static final String VALIDATION_ATTRIBUTES_NAME_PREFIX = "module.directory.exportfile.model.entity.filename.attribute.";
-
 
     // Views
     private static final String VIEW_MANAGE_MAPPINGENTRYS = "manageMappingEntrys";
@@ -127,8 +124,6 @@ public class MappingEntryJspBean extends ManageExportfileJspBean
     private DirectoryService _directoryService = DirectoryService.getService( );
     private FileNameService _fileNameService = FileNameService.getService( );
 
-    
-    
     @View( value = VIEW_MANAGE_MAPPINGENTRYS, defaultView = true )
     public String getManageMappingEntrys( HttpServletRequest request )
     {
@@ -163,8 +158,7 @@ public class MappingEntryJspBean extends ManageExportfileJspBean
         model.put( MARK_MAPPINGENTRY, _mappingentry );
         model.put( MARK_DIRECTORY_LIST, _directoryService.getListDirectories( ) );
         model.put( MARK_LIST_ENTRIES, _directoryService.getListEntries( nIdDirectory, request ) );
-        model.put(MARK_FILENAME_LIST,_fileNameService.getListUploadedFiles(request.getSession( )) );
-
+        model.put( MARK_FILENAME_LIST, _fileNameService.getListUploadedFiles( request.getSession( ) ) );
 
         return getPage( PROPERTY_PAGE_TITLE_CREATE_MAPPINGENTRY, TEMPLATE_CREATE_MAPPINGENTRY, model );
     }
@@ -179,30 +173,32 @@ public class MappingEntryJspBean extends ManageExportfileJspBean
     @Action( ACTION_CREATE_MAPPINGENTRY )
     public String doCreateMappingEntry( HttpServletRequest request )
     {
-    	populate( _mappingentry, request );
-    	if(request.getParameter(PARAMETER_SAVE_FILENAME) != null && StringUtils.equals(PARAMETER_SAVE_FILENAME_VALUE, request.getParameter(PARAMETER_SAVE_FILENAME))){
-    		FileName _fileName= new FileName();
-    		populate( _fileName, request );
-    		// Check constraints
+        populate( _mappingentry, request );
+        if ( request.getParameter( PARAMETER_SAVE_FILENAME ) != null
+                && StringUtils.equals( PARAMETER_SAVE_FILENAME_VALUE, request.getParameter( PARAMETER_SAVE_FILENAME ) ) )
+        {
+            FileName _fileName = new FileName( );
+            populate( _fileName, request );
+            // Check constraints
             if ( !validateBean( _fileName, VALIDATION_ATTRIBUTES_NAME_PREFIX ) )
             {
                 return redirectView( request, VIEW_CREATE_MAPPINGENTRY );
             }
-            _fileNameService.addFileNameToUploadedList(_fileName, request);
+            _fileNameService.addFileNameToUploadedList( _fileName, request );
             String strIdDirectory = request.getParameter( PARAMETER_ID_DIRECTORY );
-            return redirect( request, VIEW_CREATE_MAPPINGENTRY, PARAMETER_ID_DIRECTORY,Integer.parseInt(strIdDirectory) );
+            return redirect( request, VIEW_CREATE_MAPPINGENTRY, PARAMETER_ID_DIRECTORY, Integer.parseInt( strIdDirectory ) );
 
-    	}
-    	
+        }
+
         // Check constraints
         if ( !validateBean( _mappingentry, VALIDATION_ATTRIBUTES_PREFIX ) )
         {
             return redirectView( request, VIEW_CREATE_MAPPINGENTRY );
         }
 
-        _fileNameService.createEntry(_mappingentry, _fileNameService.getListUploadedFiles(request.getSession( )));
-        _fileNameService.removeFilesName(request.getSession( ));
-        
+        _fileNameService.createEntry( _mappingentry, _fileNameService.getListUploadedFiles( request.getSession( ) ) );
+        _fileNameService.removeFilesName( request.getSession( ) );
+
         addInfo( INFO_MAPPINGENTRY_CREATED, getLocale( ) );
 
         return redirectView( request, VIEW_MANAGE_MAPPINGENTRYS );
@@ -238,9 +234,9 @@ public class MappingEntryJspBean extends ManageExportfileJspBean
     public String doRemoveMappingEntry( HttpServletRequest request )
     {
         int nId = Integer.parseInt( request.getParameter( PARAMETER_ID_MAPPINGENTRY ) );
-  
-        _fileNameService.removeEntry(nId);
-        _fileNameService.removeFilesName(request.getSession( ));
+
+        _fileNameService.removeEntry( nId );
+        _fileNameService.removeFilesName( request.getSession( ) );
         addInfo( INFO_MAPPINGENTRY_REMOVED, getLocale( ) );
 
         return redirectView( request, VIEW_MANAGE_MAPPINGENTRYS );
@@ -270,19 +266,21 @@ public class MappingEntryJspBean extends ManageExportfileJspBean
 
             nIdDirectory = Integer.parseInt( strIdDirectory );
         }
-        if(_fileNameService.getListUploadedFiles(request.getSession( ))==null || _fileNameService.getListUploadedFiles(request.getSession( )).size() == 0){
-	        Collection<FileName> fileName= FileNameHome.getFilesList(nId);
-	        for(FileName fileNam: fileName){
-	        _fileNameService.addFileNameToUploadedList(fileNam, request);
-	        }
+        if ( _fileNameService.getListUploadedFiles( request.getSession( ) ) == null
+                || _fileNameService.getListUploadedFiles( request.getSession( ) ).size( ) == 0 )
+        {
+            Collection<FileName> fileName = FileNameHome.getFilesList( nId );
+            for ( FileName fileNam : fileName )
+            {
+                _fileNameService.addFileNameToUploadedList( fileNam, request );
+            }
         }
-        List<FileName> fileNameList= _fileNameService.getListUploadedFiles(request.getSession( ));
+        List<FileName> fileNameList = _fileNameService.getListUploadedFiles( request.getSession( ) );
         Map<String, Object> model = getModel( );
         model.put( MARK_MAPPINGENTRY, _mappingentry );
         model.put( MARK_DIRECTORY_LIST, _directoryService.getListDirectories( ) );
         model.put( MARK_LIST_ENTRIES, _directoryService.getListEntries( nIdDirectory, request ) );
-        model.put(MARK_FILENAME_LIST, fileNameList );
-
+        model.put( MARK_FILENAME_LIST, fileNameList );
 
         return getPage( PROPERTY_PAGE_TITLE_MODIFY_MAPPINGENTRY, TEMPLATE_MODIFY_MAPPINGENTRY, model );
     }
@@ -305,14 +303,14 @@ public class MappingEntryJspBean extends ManageExportfileJspBean
             return redirect( request, VIEW_MODIFY_MAPPINGENTRY, PARAMETER_ID_MAPPINGENTRY, _mappingentry.getId( ) );
         }
 
-        _fileNameService.updateEntry(_mappingentry, _fileNameService.getListUploadedFiles(request.getSession( )));
-        _fileNameService.removeFilesName(request.getSession( ));
+        _fileNameService.updateEntry( _mappingentry, _fileNameService.getListUploadedFiles( request.getSession( ) ) );
+        _fileNameService.removeFilesName( request.getSession( ) );
 
         addInfo( INFO_MAPPINGENTRY_UPDATED, getLocale( ) );
 
         return redirectView( request, VIEW_MANAGE_MAPPINGENTRYS );
     }
-    
+
     /**
      * Handles the removal form of a listeFileName
      *
@@ -323,9 +321,9 @@ public class MappingEntryJspBean extends ManageExportfileJspBean
     @Action( ACTION_REMOVE_FILENAME )
     public String doRemoveFileName( HttpServletRequest request )
     {
-        
-    	_fileNameService.removeFilesName(request.getSession( ));
-    	 String strIdDirectory = request.getParameter( PARAMETER_ID_DIRECTORY );
-         return redirect( request, VIEW_CREATE_MAPPINGENTRY, PARAMETER_ID_DIRECTORY,Integer.parseInt(strIdDirectory) );
+
+        _fileNameService.removeFilesName( request.getSession( ) );
+        String strIdDirectory = request.getParameter( PARAMETER_ID_DIRECTORY );
+        return redirect( request, VIEW_CREATE_MAPPINGENTRY, PARAMETER_ID_DIRECTORY, Integer.parseInt( strIdDirectory ) );
     }
 }
