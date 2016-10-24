@@ -38,6 +38,8 @@ import fr.paris.lutece.plugins.directory.business.PhysicalFileHome;
 import fr.paris.lutece.plugins.directory.business.Record;
 import fr.paris.lutece.plugins.directory.modules.exportfile.business.File;
 import fr.paris.lutece.plugins.directory.modules.exportfile.business.FileHome;
+import fr.paris.lutece.plugins.directory.modules.exportfile.business.FileName;
+import fr.paris.lutece.plugins.directory.modules.exportfile.business.FileNameHome;
 import fr.paris.lutece.plugins.directory.modules.exportfile.business.MappingEntry;
 import fr.paris.lutece.plugins.directory.modules.exportfile.business.MappingEntryHome;
 import fr.paris.lutece.plugins.directory.service.DirectoryPlugin;
@@ -45,14 +47,17 @@ import fr.paris.lutece.portal.service.daemon.Daemon;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.util.AppLogService;
+import fr.paris.lutece.portal.service.util.AppPropertiesService;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 
 import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * ExportPVNETDaemon
@@ -61,6 +66,8 @@ public class ExportFileDaemon extends Daemon
 {
     private DirectoryService _directorySrvc = DirectoryService.getService( );
     public final Plugin _pluginDirectory = PluginService.getPlugin( DirectoryPlugin.PLUGIN_NAME );
+    private String PROPERTY_IMAGE_TITLE_DATE_FORMAT = AppPropertiesService.getProperty( "module.directory.exportfile.date.format", "YYYY-MM-DD hh:mm:ss" );
+
 
     /**
      * {@inheritDoc}
@@ -81,7 +88,7 @@ public class ExportFileDaemon extends Daemon
                     try
                     {
 
-                        doProcessAction( ent.getIdEntry( ), record.getIdRecord( ), ent.getIdDirectory( ), ent.getPath( ) );
+                        doProcessAction( ent.getIdEntry( ), record.getIdRecord( ), ent.getIdDirectory( ), ent.getPath( ), ent.getId( ) );
 
                     }
                     catch( Exception e )
@@ -103,7 +110,7 @@ public class ExportFileDaemon extends Daemon
      * @param idRecord
      * @param idDirectory
      */
-    private void doProcessAction( int nIdEntry, int nIdRecord, int nIdDirectory, String strPath )
+    private void doProcessAction( int nIdEntry, int nIdRecord, int nIdDirectory, String strPath, int nId )
     {
         File fileSaved = null;
         PhysicalFile phFile = null;
@@ -120,7 +127,13 @@ public class ExportFileDaemon extends Daemon
             byte [ ] bytes = phFile.getValue( );
             ByteArrayInputStream in = new ByteArrayInputStream( bytes );
             FileOutputStream out;
-            String fileName = file.getTitle( );
+            String fileName = getFileName(  nIdEntry, nIdRecord, nIdDirectory,  nId );
+            if (fileName == null ){
+            	fileName= file.getTitle( );
+            } else if(file.getExtension( ) != null ){
+                fileName= fileName.concat("."+file.getExtension( ));
+            }
+            
             try
             {
 
@@ -154,5 +167,39 @@ public class ExportFileDaemon extends Daemon
 
             FileHome.create( fileExport );
         }
+    }
+    
+    private String getFileName( int nIdEntry, int nIdRecord, int nIdDirectory,  int nId )
+    {
+    	
+    	Collection<FileName> fileNameList= FileNameHome.getFilesList(nId);
+    	String fileName= StringUtils.EMPTY;
+        SimpleDateFormat dt = new SimpleDateFormat( PROPERTY_IMAGE_TITLE_DATE_FORMAT );
+
+    	for(FileName fname:fileNameList){
+    		
+        	String tmpFileName= _directorySrvc.getRecordFieldStringValue( Integer.parseInt(fname.getAttribute( )), nIdRecord, nIdDirectory );
+	    	if(fname.getAttribute().equals(DirectoryService.DATE_CREATION_RECORD_CODE)){
+	    		
+	    		fileName= fileName.concat(dt.format(_directorySrvc.getDateCreation(nIdRecord, nIdDirectory))).concat("_");
+	    		
+	    	}else if(tmpFileName.length( ) > fname.getNumberChar( ) ){
+	    		
+	    		
+	    		fileName= fileName.concat(tmpFileName.substring(0,fname.getNumberChar( )).concat("_"));
+
+	    	}
+	    	else{
+	    		
+	    		fileName= fileName.concat(tmpFileName).concat("_");
+	
+	    	}
+    	
+    	}
+    	if(!fileName.isEmpty( )){
+        	return fileName.substring(0,fileName.length() - 1);
+
+    	}
+    	return null;
     }
 }

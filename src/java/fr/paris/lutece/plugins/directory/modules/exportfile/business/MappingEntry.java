@@ -33,6 +33,11 @@
  */
 package fr.paris.lutece.plugins.directory.modules.exportfile.business;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
+
+import org.hibernate.validator.constraints.NotEmpty;
+
 /**
  * This is the business class for the object MappingEntry
  */
@@ -40,11 +45,15 @@ public class MappingEntry
 {
     // Variables declarations
     private int _nId;
-
+ 
+    @Min( value = 1, message = "#i18n{module.directory.exportfile.validation.mappingEntry.idEntry.notEmpty}" )
     private int _nIdEntry;
 
+    @Min( value = 1, message = "#i18n{module.directory.exportfile.validation.mappingEntry.idDirectory.notEmpty}" )
     private int _nIdDirectory;
 
+    @NotEmpty( message = "#i18n{module.directory.exportfile.validation.mappingEntry.path.notEmpty}" )
+    @Size( max = 255, message = "#i18n{module.directory.exportfile.validation.mappingEntry.path.size}" )
     private String _strPath;
 
     private boolean _bIsActive;

@@ -25,3 +25,17 @@ path varchar(255) NOT NULL,
 isactive SMALLINT NOT NULL,
 PRIMARY KEY (id_mappingentry)
 );
+
+--
+-- Structure for table exportfile_fileName
+--
+
+DROP TABLE IF EXISTS exportfile_fileName;
+CREATE TABLE exportfile_fileName (
+mapping_entry int(6) NOT NULL,
+attribute varchar(255) NOT NULL,
+number_char int(11) NOT NULL default '0',
+order_name int(11) NOT NULL,
+PRIMARY KEY (mapping_entry, attribute, order_name)
+);
+

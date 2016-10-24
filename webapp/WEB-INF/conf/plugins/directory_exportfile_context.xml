@@ -6,5 +6,7 @@
 
 
     <bean id="exportfile.fileDAO"  class="fr.paris.lutece.plugins.directory.modules.exportfile.business.FileDAO" />  
-    <bean id="exportfile.mappingEntryDAO"  class="fr.paris.lutece.plugins.directory.modules.exportfile.business.MappingEntryDAO" />  
+    <bean id="exportfile.mappingEntryDAO"  class="fr.paris.lutece.plugins.directory.modules.exportfile.business.MappingEntryDAO" /> 
+    <bean id="exportfile.fileNameDAO"  class="fr.paris.lutece.plugins.directory.modules.exportfile.business.FileNameDAO" />  
+     
 </beans>

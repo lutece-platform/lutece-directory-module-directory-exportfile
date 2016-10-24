@@ -43,103 +43,73 @@ import java.util.Collection;
  * This class provides instances management methods (create, find, ...) for File objects
  */
 
-public final class FileHome
+public final class FileNameHome
 {
     // Static variable pointed at the DAO instance
 
-    private static IFileDAO _dao = SpringContextService.getBean( "exportfile.fileDAO" );
+    private static IFileNameDAO _dao = SpringContextService.getBean( "exportfile.fileNameDAO" );
     private static Plugin _plugin = PluginService.getPlugin( "directory_exportfile" );
 
     /**
      * Private constructor - this class need not be instantiated
      */
-    private FileHome( )
+    private FileNameHome( )
     {
     }
 
     /**
-     * Create an instance of the file class
+     * Create an instance of the fileName class
      * 
-     * @param file
-     *            The instance of the File which contains the informations to store
-     * @return The instance of file which has been created with its primary key.
+     * @param fileName
+     *            The instance of the fileName which contains the informations to store
+     * @return The instance of fileName which has been created with its primary key.
      */
-    public static File create( File file )
+    public static FileName create( FileName fileName )
     {
-        _dao.insert( file, _plugin );
+        _dao.insert( fileName, _plugin );
 
-        return file;
+        return fileName;
     }
 
+
     /**
-     * Update of the file which is specified in parameter
+     * Remove the fileName whose idMappingEntry is specified in parameter
      * 
-     * @param file
-     *            The instance of the File which contains the data to store
-     * @return The instance of the file which has been updated
+     * @param fileName
+     *            The file fileName
      */
-    public static File update( File file )
+    public static void remove( FileName fileName )
     {
-        _dao.store( file, _plugin );
-
-        return file;
+        _dao.delete( fileName, _plugin );
     }
+    
 
     /**
-     * Remove the file whose identifier is specified in parameter
+     * Remove the fileName whose idMappingEntry is specified in parameter
      * 
      * @param nKey
-     *            The file Id
+     *            The file idMappingEntry
      */
-    public static void remove( int nKey )
+    public static void remove( int nKey)
     {
-        _dao.delete( nKey, _plugin );
+        _dao.delete( nKey,  _plugin );
     }
 
     // /////////////////////////////////////////////////////////////////////////
     // Finders
 
-    /**
-     * Returns an instance of a file whose identifier is specified in parameter
-     * 
-     * @param nKey
-     *            The file primary key
-     * @return an instance of File
-     */
-    public static File findByPrimaryKey( int nKey )
-    {
-        return _dao.load( nKey, _plugin );
-    }
+
 
     /**
-     * Returns an instance of a file
-     * 
-     * @param nIdFile
+     * Load the data of all the FileName objects and returns them in form of a collection
      * @param nIdDirectory
-     * @return an instance of File
-     */
-    public static File findFile( int nIdFile, int nIdDirectory )
-    {
-        return _dao.load( nIdFile, nIdDirectory, _plugin );
-    }
-
-    /**
-     * Load the data of all the file objects and returns them in form of a collection
      * 
      * @return the collection which contains the data of all the file objects
      */
-    public static Collection<File> getFilesList( )
+    public static Collection<FileName> getFilesList( int nIdMappingEntry)
     {
-        return _dao.selectFilesList( _plugin );
+        return _dao.selectFilesNameList( nIdMappingEntry, _plugin );
     }
 
-    /**
-     * Load the id of all the file objects and returns them in form of a collection
-     * 
-     * @return the collection which contains the id of all the file objects
-     */
-    public static Collection<Integer> getIdFilesList( )
-    {
-        return _dao.selectIdFilesList( _plugin );
-    }
+    
 }

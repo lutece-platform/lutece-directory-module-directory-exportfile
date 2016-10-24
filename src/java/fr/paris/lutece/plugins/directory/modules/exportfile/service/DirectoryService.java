@@ -48,12 +48,15 @@ import fr.paris.lutece.plugins.directory.utils.DirectoryUtils;
 import fr.paris.lutece.portal.service.admin.AdminUserService;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
+import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.util.ReferenceItem;
 import fr.paris.lutece.util.ReferenceList;
 
 import org.apache.commons.lang.StringUtils;
 
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,6 +70,11 @@ public class DirectoryService
     private static final String PROPERTY_ENTRY_TYPE_CAMERA = "module.directory.exportfile.entry_type.camera";
     private static final String PROPERTY_ENTRY_TYPE_FILE = "module.directory.exportfile.entry_type.file";
     private static final String PROPERTY_ENTRY_TYPE_IMAGE = "directory.resource_rss.entry_type_image";
+    private static final String PROPERTY_ENTRY_TYPE_GEOLOCATION = "directory.entry_type.geolocation";
+
+    private static final String DATE_CREATION_RECORD_TITLE = "creation date";
+    public static final String DATE_CREATION_RECORD_CODE = "9999999";
+
 
     private static DirectoryService _singleton;
 
@@ -160,7 +168,11 @@ public class DirectoryService
                     referenceList.add( referenceItem );
                 }
             }
-
+            
+            ReferenceItem referenceItem = new ReferenceItem( );
+            referenceItem.setCode( DATE_CREATION_RECORD_CODE );
+            referenceItem.setName( DATE_CREATION_RECORD_TITLE );
+            referenceList.add( referenceItem );
             return referenceList;
         }
         else
@@ -247,5 +259,89 @@ public class DirectoryService
 
         return listRecord;
     }
+    
+    public Timestamp getDateCreation( int nIdRecord, int nIdDirectory )
+    {
+        Plugin pluginDirectory = PluginService.getPlugin( DirectoryPlugin.PLUGIN_NAME );
+        
+        RecordFieldFilter recordFieldFilter = new RecordFieldFilter(  );
+        recordFieldFilter.setIdDirectory( nIdDirectory );
+        recordFieldFilter.setIdRecord( nIdRecord );
+
+        List<RecordField> listRecordFields = RecordFieldHome.getRecordFieldList( recordFieldFilter, pluginDirectory );
+
+        if ( ( listRecordFields != null ) && !listRecordFields.isEmpty(  ) && ( listRecordFields.get( 0 ) != null ) )
+        {
+            return listRecordFields.get( 0 ).getRecord(  ).getDateCreation(  );
+        }
+
+        return null;
+    }
+
+    /**
+     * get record field value
+     * @param nIdEntry
+     * @param nIdRecord
+     * @param nIdDirectory
+     * @return record field value
+     */
+    public String getRecordFieldStringValue( int nIdEntry, int nIdRecord, int nIdDirectory )
+    {
+        String strRecordFieldValue = StringUtils.EMPTY;
+        Plugin pluginDirectory = PluginService.getPlugin( DirectoryPlugin.PLUGIN_NAME );
+
+       IEntry entry = EntryHome.findByPrimaryKey(nIdEntry, pluginDirectory );
+
+        if ( ( entry != null ) )
+        {
+          
+            RecordFieldFilter recordFieldFilter = new RecordFieldFilter(  );
+            recordFieldFilter.setIdDirectory( nIdDirectory );
+            recordFieldFilter.setIdEntry( entry.getIdEntry(  ) );
+            recordFieldFilter.setIdRecord( nIdRecord );
+
+            List<RecordField> listRecordFields = RecordFieldHome.getRecordFieldList( recordFieldFilter, pluginDirectory );
+
+            if ( entry.getEntryType(  ).getIdType(  ) == AppPropertiesService.getPropertyInt( 
+                        PROPERTY_ENTRY_TYPE_GEOLOCATION, 16 ) )
+            {
+                if ( listRecordFields.size(  ) >= 4 )
+                {
+                    return listRecordFields.get( 2 ).getValue(  ) + ", " + listRecordFields.get( 3 ).getValue(  );
+                }
+                else
+                {
+                    return StringUtils.EMPTY;
+                }
+            }
+
+            if ( ( entry.getEntryType(  ).getIdType(  ) == AppPropertiesService.getPropertyInt( 
+                        PROPERTY_ENTRY_TYPE_IMAGE, 10 ) ) || ( entry.getEntryType(  ).getIdType(  ) == 8 ) )
+            {
+                if ( listRecordFields.size(  ) >= 1 )
+                {
+                    return listRecordFields.get( 0 ).getFile(  ).getTitle( );
+                }
+                else
+                {
+                    return StringUtils.EMPTY;
+                }
+            }
+
+            if ( ( listRecordFields != null ) && !listRecordFields.isEmpty(  ) && ( listRecordFields.get( 0 ) != null ) )
+            {
+                RecordField recordFieldIdDemand = listRecordFields.get( 0 );
+                strRecordFieldValue = recordFieldIdDemand.getValue(  );
+
+                if ( recordFieldIdDemand.getField(  ) != null )
+                {
+                    strRecordFieldValue = recordFieldIdDemand.getField(  ).getTitle(  );
+                }
+            }
+        }
+
+        return strRecordFieldValue;
+    }
+
 
 }

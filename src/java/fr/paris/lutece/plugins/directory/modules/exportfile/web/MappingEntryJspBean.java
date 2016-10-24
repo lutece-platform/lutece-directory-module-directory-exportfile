@@ -34,9 +34,12 @@
 
 package fr.paris.lutece.plugins.directory.modules.exportfile.web;
 
+import fr.paris.lutece.plugins.directory.modules.exportfile.business.FileName;
+import fr.paris.lutece.plugins.directory.modules.exportfile.business.FileNameHome;
 import fr.paris.lutece.plugins.directory.modules.exportfile.business.MappingEntry;
 import fr.paris.lutece.plugins.directory.modules.exportfile.business.MappingEntryHome;
 import fr.paris.lutece.plugins.directory.modules.exportfile.service.DirectoryService;
+import fr.paris.lutece.plugins.directory.modules.exportfile.service.FileNameService;
 import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
 import fr.paris.lutece.portal.util.mvc.admin.annotations.Controller;
@@ -44,11 +47,15 @@ import fr.paris.lutece.portal.util.mvc.commons.annotations.Action;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
 import fr.paris.lutece.util.url.UrlItem;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -69,6 +76,10 @@ public class MappingEntryJspBean extends ManageExportfileJspBean
     // Parameters
     private static final String PARAMETER_ID_MAPPINGENTRY = "id";
     private static final String PARAMETER_ID_DIRECTORY = "idDirectory";
+    private static final String PARAMETER_SAVE_FILENAME = "action_createMappingEntry";
+    
+    private static final String PARAMETER_SAVE_FILENAME_VALUE = "save_fileName";
+
 
     // Properties for page titles
     private static final String PROPERTY_PAGE_TITLE_MANAGE_MAPPINGENTRYS = "module.directory.exportfile.manage_mappingentrys.pageTitle";
@@ -78,6 +89,8 @@ public class MappingEntryJspBean extends ManageExportfileJspBean
     // Markers
     private static final String MARK_MAPPINGENTRY_LIST = "mappingentry_list";
     private static final String MARK_MAPPINGENTRY = "mappingentry";
+    private static final String MARK_FILENAME_LIST = "fileName_list";
+
 
     private static final String JSP_MANAGE_MAPPINGENTRYS = "jsp/admin/plugins/directory/modules/exportfile/ManageMappingEntry.jsp";
 
@@ -86,6 +99,8 @@ public class MappingEntryJspBean extends ManageExportfileJspBean
     private static final String PROPERTY_DEFAULT_LIST_MAPPINGENTRY_PER_PAGE = "module.directory.exportfile.listMappingEntrys.itemsPerPage";
 
     private static final String VALIDATION_ATTRIBUTES_PREFIX = "module.directory.exportfile.model.entity.mappingentry.attribute.";
+    private static final String VALIDATION_ATTRIBUTES_NAME_PREFIX = "module.directory.exportfile.model.entity.filename.attribute.";
+
 
     // Views
     private static final String VIEW_MANAGE_MAPPINGENTRYS = "manageMappingEntrys";
@@ -95,6 +110,7 @@ public class MappingEntryJspBean extends ManageExportfileJspBean
     // Actions
     private static final String ACTION_CREATE_MAPPINGENTRY = "createMappingEntry";
     private static final String ACTION_MODIFY_MAPPINGENTRY = "modifyMappingEntry";
+    private static final String ACTION_REMOVE_FILENAME = "removeFileName";
     private static final String ACTION_REMOVE_MAPPINGENTRY = "removeMappingEntry";
     private static final String ACTION_CONFIRM_REMOVE_MAPPINGENTRY = "confirmRemoveMappingEntry";
 
@@ -109,7 +125,10 @@ public class MappingEntryJspBean extends ManageExportfileJspBean
     // Session variable to store working values
     private MappingEntry _mappingentry;
     private DirectoryService _directoryService = DirectoryService.getService( );
+    private FileNameService _fileNameService = FileNameService.getService( );
 
+    
+    
     @View( value = VIEW_MANAGE_MAPPINGENTRYS, defaultView = true )
     public String getManageMappingEntrys( HttpServletRequest request )
     {
@@ -144,6 +163,8 @@ public class MappingEntryJspBean extends ManageExportfileJspBean
         model.put( MARK_MAPPINGENTRY, _mappingentry );
         model.put( MARK_DIRECTORY_LIST, _directoryService.getListDirectories( ) );
         model.put( MARK_LIST_ENTRIES, _directoryService.getListEntries( nIdDirectory, request ) );
+        model.put(MARK_FILENAME_LIST,_fileNameService.getListUploadedFiles(request.getSession( )) );
+
 
         return getPage( PROPERTY_PAGE_TITLE_CREATE_MAPPINGENTRY, TEMPLATE_CREATE_MAPPINGENTRY, model );
     }
@@ -158,15 +179,30 @@ public class MappingEntryJspBean extends ManageExportfileJspBean
     @Action( ACTION_CREATE_MAPPINGENTRY )
     public String doCreateMappingEntry( HttpServletRequest request )
     {
-        populate( _mappingentry, request );
+    	populate( _mappingentry, request );
+    	if(request.getParameter(PARAMETER_SAVE_FILENAME) != null && StringUtils.equals(PARAMETER_SAVE_FILENAME_VALUE, request.getParameter(PARAMETER_SAVE_FILENAME))){
+    		FileName _fileName= new FileName();
+    		populate( _fileName, request );
+    		// Check constraints
+            if ( !validateBean( _fileName, VALIDATION_ATTRIBUTES_NAME_PREFIX ) )
+            {
+                return redirectView( request, VIEW_CREATE_MAPPINGENTRY );
+            }
+            _fileNameService.addFileNameToUploadedList(_fileName, request);
+            String strIdDirectory = request.getParameter( PARAMETER_ID_DIRECTORY );
+            return redirect( request, VIEW_CREATE_MAPPINGENTRY, PARAMETER_ID_DIRECTORY,Integer.parseInt(strIdDirectory) );
 
+    	}
+    	
         // Check constraints
         if ( !validateBean( _mappingentry, VALIDATION_ATTRIBUTES_PREFIX ) )
         {
             return redirectView( request, VIEW_CREATE_MAPPINGENTRY );
         }
 
-        MappingEntryHome.create( _mappingentry );
+        _fileNameService.createEntry(_mappingentry, _fileNameService.getListUploadedFiles(request.getSession( )));
+        _fileNameService.removeFilesName(request.getSession( ));
+        
         addInfo( INFO_MAPPINGENTRY_CREATED, getLocale( ) );
 
         return redirectView( request, VIEW_MANAGE_MAPPINGENTRYS );
@@ -202,7 +238,9 @@ public class MappingEntryJspBean extends ManageExportfileJspBean
     public String doRemoveMappingEntry( HttpServletRequest request )
     {
         int nId = Integer.parseInt( request.getParameter( PARAMETER_ID_MAPPINGENTRY ) );
-        MappingEntryHome.remove( nId );
+  
+        _fileNameService.removeEntry(nId);
+        _fileNameService.removeFilesName(request.getSession( ));
         addInfo( INFO_MAPPINGENTRY_REMOVED, getLocale( ) );
 
         return redirectView( request, VIEW_MANAGE_MAPPINGENTRYS );
@@ -232,11 +270,19 @@ public class MappingEntryJspBean extends ManageExportfileJspBean
 
             nIdDirectory = Integer.parseInt( strIdDirectory );
         }
-
+        if(_fileNameService.getListUploadedFiles(request.getSession( ))==null || _fileNameService.getListUploadedFiles(request.getSession( )).size() == 0){
+	        Collection<FileName> fileName= FileNameHome.getFilesList(nId);
+	        for(FileName fileNam: fileName){
+	        _fileNameService.addFileNameToUploadedList(fileNam, request);
+	        }
+        }
+        List<FileName> fileNameList= _fileNameService.getListUploadedFiles(request.getSession( ));
         Map<String, Object> model = getModel( );
         model.put( MARK_MAPPINGENTRY, _mappingentry );
         model.put( MARK_DIRECTORY_LIST, _directoryService.getListDirectories( ) );
         model.put( MARK_LIST_ENTRIES, _directoryService.getListEntries( nIdDirectory, request ) );
+        model.put(MARK_FILENAME_LIST, fileNameList );
+
 
         return getPage( PROPERTY_PAGE_TITLE_MODIFY_MAPPINGENTRY, TEMPLATE_MODIFY_MAPPINGENTRY, model );
     }
@@ -259,9 +305,27 @@ public class MappingEntryJspBean extends ManageExportfileJspBean
             return redirect( request, VIEW_MODIFY_MAPPINGENTRY, PARAMETER_ID_MAPPINGENTRY, _mappingentry.getId( ) );
         }
 
-        MappingEntryHome.update( _mappingentry );
+        _fileNameService.updateEntry(_mappingentry, _fileNameService.getListUploadedFiles(request.getSession( )));
+        _fileNameService.removeFilesName(request.getSession( ));
+
         addInfo( INFO_MAPPINGENTRY_UPDATED, getLocale( ) );
 
         return redirectView( request, VIEW_MANAGE_MAPPINGENTRYS );
+    }
+    
+    /**
+     * Handles the removal form of a listeFileName
+     *
+     * @param request
+     *            The Http request
+     * @return the jsp URL to display the form to manage mappingentrys
+     */
+    @Action( ACTION_REMOVE_FILENAME )
+    public String doRemoveFileName( HttpServletRequest request )
+    {
+        
+    	_fileNameService.removeFilesName(request.getSession( ));
+    	 String strIdDirectory = request.getParameter( PARAMETER_ID_DIRECTORY );
+         return redirect( request, VIEW_CREATE_MAPPINGENTRY, PARAMETER_ID_DIRECTORY,Integer.parseInt(strIdDirectory) );
     }
 }

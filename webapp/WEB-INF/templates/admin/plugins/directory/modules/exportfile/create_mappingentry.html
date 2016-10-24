@@ -1,6 +1,6 @@
 <#include "manageexportfile_tabs.html" />
 <@tabs tab="mappingentry" />
-
+<#assign trash= false>
 <@rowBoxHeader i18nTitleKey="module.directory.exportfile.create_mappingentry.pageTitle">
     <form class="form-horizontal" method="post" name="create_mappingentry" action="jsp/admin/plugins/directory/modules/exportfile/ManageMappingEntry.jsp">
         <@messages errors=errors />
@@ -30,6 +30,31 @@
 		<@fieldInputText i18nLabelKey="module.directory.exportfile.create_mappingentry.labelPath" inputName="path" mandatory=true value="${mappingentry.path!''}" i18nHelpBlockKey="module.directory.exportfile.create_mappingentry.labelPath.help" />
 		
         <@fieldInputCheckBox i18nLabelKey="module.directory.exportfile.create_mappingentry.labelIsActive" inputName="isActive" value='true' checked=mappingentry.isActive!false i18nHelpBlockKey="module.directory.exportfile.create_mappingentry.labelIsActive.help" />
+
+
+<div class="form-group " >
+	<label class="control-label col-xs-12 col-sm-12 col-md-3 col-lg-3" for="idDirectory">Nom du fichier </label>
+	<div class="col-xs-12 col-sm-12 col-md-9 col-lg-9" >
+		<div class= "box">
+		<@comboWithParams name="attribute" default_value=mappingentry.idEntry?string additionalParameters="class=\"input-xxlarge\"" items=list_entries />
+		<label class="control-label">Max de caractèr</label> <input type="number" name="numberChar" min="0"/>
+		<button type="submit"  name="action_createMappingEntry" value="save_fileName" class="btn btn-primary" >Concatiner</button>
+		<p class="help-block">Configuration du nom des fichiers à exporter</p>
+		<h4><#list fileName_list as fileName>
+			  <#list list_entries as ent>
+				<#if ent.code == fileName.attribute>
+	     		  		<#if trash?? && trash=true>+ _ +</#if>attribut_${ent.name}<#if fileName.numberChar!= 0>[max ${fileName.numberChar}]</#if>
+				</#if>
+			  </#list>
+		  <#assign trash= true>
+		</#list>
+		<#if trash?? && trash=true>
+		<button type="submit"  name="action_removeFileName"  class="btn btn-danger btn-small"> <i class="fa fa-trash"></i></button></h4>
+		</#if>
+		</div>
+	</div>
+	
+</div>
         <@actionButtons button1Name="action_createMappingEntry" button2Name="view_manageMappingEntrys"/>
     </form>
 </@rowBoxHeader>

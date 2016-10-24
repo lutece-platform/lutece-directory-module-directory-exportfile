@@ -51,7 +51,7 @@ public final class MappingEntryDAO implements IMappingEntryDAO
     private static final String SQL_QUERY_SELECT = "SELECT id_mappingentry, idEntry, idDirectory, path, isActive FROM exportfile_mapping_entry WHERE id_mappingentry = ?";
     private static final String SQL_QUERY_INSERT = "INSERT INTO exportfile_mapping_entry ( id_mappingentry, idEntry, idDirectory, path, isActive ) VALUES ( ?, ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM exportfile_mapping_entry WHERE id_mappingentry = ? ";
-    private static final String SQL_QUERY_UPDATE = "UPDATE exportfile_mapping_entry SET id_mappingentry = ?, idEntry = ?, idDirectory = ?, path = ?, isActive = ? WHERE id_mappingentry = ?";
+    private static final String SQL_QUERY_UPDATE = "UPDATE exportfile_mapping_entry SET idEntry = ?, idDirectory = ?, path = ?, isActive = ? WHERE id_mappingentry = ?";
     private static final String SQL_QUERY_SELECTALL = "SELECT id_mappingentry, idEntry, idDirectory, path, isActive FROM exportfile_mapping_entry";
     private static final String SQL_QUERY_SELECTALL_ID = "SELECT id_mappingentry FROM exportfile_mapping_entry";
 
@@ -145,12 +145,11 @@ public final class MappingEntryDAO implements IMappingEntryDAO
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, plugin );
 
-        daoUtil.setInt( 1, mappingEntry.getId( ) );
-        daoUtil.setInt( 2, mappingEntry.getIdEntry( ) );
-        daoUtil.setInt( 3, mappingEntry.getIdDirectory( ) );
+        daoUtil.setInt( 1, mappingEntry.getIdEntry( ) );
+        daoUtil.setInt( 2, mappingEntry.getIdDirectory( ) );
         daoUtil.setBoolean( 4, mappingEntry.getIsActive( ) );
-        daoUtil.setString( 4, mappingEntry.getPath( ) );
-        daoUtil.setBoolean( 5, mappingEntry.getIsActive( ) );
+        daoUtil.setString( 3, mappingEntry.getPath( ) );
+        daoUtil.setInt( 5, mappingEntry.getId( ) );
 
         daoUtil.executeUpdate( );
         daoUtil.free( );

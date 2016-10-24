@@ -48,7 +48,7 @@ public final class MappingEntryHome
     // Static variable pointed at the DAO instance
 
     private static IMappingEntryDAO _dao = SpringContextService.getBean( "exportfile.mappingEntryDAO" );
-    private static Plugin _plugin = PluginService.getPlugin( "exportfile" );
+    private static Plugin _plugin = PluginService.getPlugin( "directory-exportfile" );
 
     /**
      * Private constructor - this class need not be instantiated
